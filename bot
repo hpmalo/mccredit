@@ -1,0 +1,57 @@
+import coms
+import telebot
+import os
+from telebot import types
+
+bot = telebot.TeleBot(coms.token)
+
+@bot.callback_query_handler(func=lambda c: True)
+def asda(c):
+    if c.data == 'Следующий шаг':
+        path1 = os.path.join(os.path.abspath(os.path.dirname(__file__)), '{}.txt'.format(c.message.chat.id))
+        os.remove(path1)
+
+
+@bot.message_handler(content_types=['text'])
+def message(m):
+    try:
+        if int(m.text):
+            f = open('{}.txt'.format(m.chat.id), 'w+')
+            f.write(m.text)
+            aa=bot.send_message(m.chat.id, 'Какое твое любимое число?')
+            bot.register_next_step_handler(aa, mms)
+    except ValueError:
+        keyboard = types.InlineKeyboardMarkup()
+        callback_button = types.InlineKeyboardButton(text="Следующий шаг", callback_data='Следующий шаг')
+        keyboard.add(callback_button)
+        bot.send_message(m.chat.id, 'Сколько тебе лет?', reply_markup=keyboard)
+def mms(m):
+    try:
+        if int(m.text):
+            #f=open('AA{}.txt'.format(m.chat.id), 'w+')
+            #f.write(m.text)
+            f = open('{}.txt'.format(m.chat.id), 'w+')
+            for line in f:
+                assd = line
+                markup = types.InlineKeyboardMarkup()
+                btn_my_site = types.InlineKeyboardButton(text='Верно?')
+                markup.add(btn_my_site)
+                bot.send_message(m.chat.id, """ Тебе {} лет
+            твое любимое число {}""".format(assd, m.text), reply_markup=markup)
+    except ValueError:
+        bot.send_message(m.chat.id, 'Какое твое любимое число?')
+
+def gg(m):
+    f = open('{}.txt'.format(m.chat.id), 'w+')
+    f2 = open('AA{}.txt'.format(m.chat.id), 'w+')
+    for line in f:
+        asd=line
+    for line in f2:
+        ddas =line
+        markup = types.InlineKeyboardMarkup()
+        btn_my_site = types.InlineKeyboardButton(text='Верно?')
+        markup.add(btn_my_site)
+        bot.send_message(m.chat.id, """ Тебе {} лет
+твое любимое число {}""".format(asd, ddas), reply_markup = markup)
+
+bot.polling(none_stop=True, interval=0)
